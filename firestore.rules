@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /desertPrinceTrackers/united-arab-emirates/coordinates/{coordinateId} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && coordinateId.matches('^(575|594|614|633|653|672|692|711):(575|594|614|633|653|672|692|711)$')
+        && request.resource.data.keys().hasOnly(['found', 'appearanceDate', 'editedAt'])
+        && request.resource.data.keys().hasAll(['found', 'appearanceDate', 'editedAt'])
+        && request.resource.data.found is bool
+        && request.resource.data.appearanceDate is string
+        && request.resource.data.appearanceDate.size() <= 16
+        && request.resource.data.editedAt is string
+        && request.resource.data.editedAt.size() <= 40;
+      allow delete: if false;
+    }
+  }
+}
